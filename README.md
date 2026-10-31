@@ -188,7 +188,6 @@ To add a step, add an entry to `nodes.cjs`. The editor reads the catalog over IP
 
 The selectors for post search, profile reading, connect without a note, and messaging come from the desktop app, where they run in production. Everything else was written without a logged-in session to check against:
 
-- **Reading comments** on a post (`SELECTORS.COMMENT` and `readComments` in the adapter). When nothing matches, the step logs "no comments found; the comment selectors may be stale" instead of returning an empty success.
 - **People search** result cards (`readPeopleCards` and `parsePersonCard`).
 - **The connection note**: the Add a note button, the text box, and Send.
 - **Like, comment, repost and follow**: the buttons on a single-post page, the reaction tray, the comment box, the repost menu and its toast, and Follow on company pages and profiles.

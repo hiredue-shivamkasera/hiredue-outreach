@@ -1,7 +1,7 @@
 // Drives one logged-in LinkedIn page the way a person would: search, read comments, open profiles, connect, message. Every awkward fact about LinkedIn's markup lives here so the steps read as plain actions.
 
 const { LINKEDIN, SELECTORS, PAUSE, TIMEOUT, LIMITS } = require("../constants.cjs");
-const { parsePostStream, mergePosts, parsePersonCard, cleanProfileUrl, postedAt } = require("../domain/linkedinData.cjs");
+const { parsePostStream, mergePosts, parsePersonCard, parseTopcardLines, cleanProfileUrl, postedAt } = require("../domain/linkedinData.cjs");
 
 const rand = (min, max) => Math.round(min + Math.random() * (max - min));
 const pause = ([min, max]) => new Promise((r) => setTimeout(r, rand(min, max)));
@@ -186,16 +186,22 @@ function createLinkedIn(page, { log = () => {}, shouldStop = () => false } = {})
     await goto(profileUrl);
     await page.waitForSelector(SELECTORS.TOPCARD, { timeout: 15_000 });
     await pause(PAUSE.AFTER_PROFILE_OPEN);
-    // Experience loads lazily as it scrolls into view.
-    await page.locator(SELECTORS.EXPERIENCE).first().scrollIntoViewIfNeeded({ timeout: 8000 }).catch(() => {});
+    // Experience is not in the page until its placeholder has been scrolled into view; a profile with no Experience never fills it, and reads as null after the wait.
+    await page.locator(SELECTORS.EXPERIENCE_ANCHOR).first().scrollIntoViewIfNeeded({ timeout: 8000 }).catch(() => {});
+    await page.waitForSelector(SELECTORS.EXPERIENCE, { timeout: 8000 }).catch(() => {});
     await pause([1000, 2000]);
-    const data = await page.evaluate(readTopcard, SELECTORS);
+    const data = await topcard();
     await page.evaluate(() => window.scrollTo(0, 0));
     return data;
   }
 
+  async function topcard() {
+    const { lines, ...data } = await page.evaluate(readTopcard, SELECTORS);
+    return { ...data, ...parseTopcardLines(lines || []) };
+  }
+
   async function connectState() {
-    return page.evaluate(readTopcard, SELECTORS).then((d) => d, () => null);
+    return topcard().catch(() => null);
   }
 
   // Strategies in the order the desktop app found reliable: the named invite link, any "to connect" link, a Connect button, then the More menu.
@@ -542,9 +548,7 @@ function readTopcard(S) {
   if (!top) return { name: null };
   const visible = (el) => { const r = el.getBoundingClientRect(); const s = getComputedStyle(el); return r.width > 0 && r.height > 0 && s.visibility !== "hidden" && s.display !== "none"; };
   const name = top.querySelector("h1, h2")?.innerText?.trim() || null;
-  const ps = [...top.querySelectorAll("p")].map((p) => p.innerText.trim()).filter(Boolean);
-  const headline = ps.filter((t) => t.length > 10 && !/connections?$/.test(t)).sort((a, b) => b.length - a.length)[0] || null;
-  const location = ps.find((t) => /,\s*\w/.test(t) && !/·|connections|Contact/.test(t)) || null;
+  const lines = [...top.querySelectorAll("p")].map((p) => p.innerText.trim()).filter(Boolean);
   // LinkedIn renders both a 1st and a 2nd badge and hides one with CSS, so only a visible badge counts.
   let degree = null;
   for (const el of top.querySelectorAll("p, span")) {
@@ -559,7 +563,7 @@ function readTopcard(S) {
   const exp = document.querySelector(S.EXPERIENCE) || [...document.querySelectorAll("section")].find((s) => /^Experience/.test(s.querySelector("h2")?.innerText?.trim() || ""));
   const collapse = (t) => (t || "").split("\n").map((l) => l.trim()).filter((l, i, a) => l && l !== a[i - 1]).join("\n");
   return {
-    name, headline, location, degree, isPending, profileUrn,
+    name, lines, degree, isPending, profileUrn,
     about: collapse(about?.innerText).replace(/^About\n?/, "").slice(0, 2000) || null,
     experience: collapse(exp?.innerText).replace(/^Experience\n?/, "").slice(0, 4000) || null,
   };

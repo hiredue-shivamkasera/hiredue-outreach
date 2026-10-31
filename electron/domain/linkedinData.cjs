@@ -84,6 +84,21 @@ function parsePersonCard(lines, profileUrl) {
   return { name, headline, location, degree: degree ? degree.toLowerCase() : null, profileUrl: cleanProfileUrl(profileUrl), snippet: snippet.length ? snippet.join("\n") : null };
 }
 
+const TOPCARD_BADGE = /^·?\s*(1st|2nd|3rd\+?)$/i;
+const PRONOUNS = /^(he|she|they|xe|ze)\/\w+$/i;
+
+// A profile's top card lines, in the order LinkedIn renders them: pronouns, degree badge, headline, "Company · School", location, "·", "Contact info". Position decides, because length and commas cannot: a short headline is shorter than its city, and a headline can contain commas.
+function parseTopcardLines(lines) {
+  const ls = lines.map((l) => String(l).trim()).filter(Boolean);
+  let at = ls.indexOf("Contact info") - 1;
+  while (at >= 0 && ls[at] === "·") at--;
+  const location = at >= 0 ? ls[at] : null;
+  let start = ls.findIndex((l) => TOPCARD_BADGE.test(l)) + 1;
+  while (start < ls.length && (TOPCARD_BADGE.test(ls[start]) || PRONOUNS.test(ls[start]))) start++;
+  const end = location ? at : ls.length;
+  return { headline: start < end ? ls[start] : null, location };
+}
+
 function cleanProfileUrl(url) {
   const vanity = String(url || "").match(/\/in\/([^/?#]+)/)?.[1];
   return vanity ? `https://www.linkedin.com/in/${vanity}/` : null;
@@ -108,4 +123,4 @@ function itemFromUrl(raw) {
   return null;
 }
 
-module.exports = { parsePostStream, mergePosts, parsePersonCard, cleanProfileUrl, postedAt, itemFromUrl };
+module.exports = { parsePostStream, mergePosts, parsePersonCard, parseTopcardLines, cleanProfileUrl, postedAt, itemFromUrl };

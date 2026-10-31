@@ -30,8 +30,11 @@ const SELECTORS = {
   POST_MENU: '[aria-label^="Open control menu for post by"]',
   // verified: profile top card
   TOPCARD: '[componentkey*="Topcard"]',
-  EXPERIENCE: 'section[componentkey*="ExperienceTopLevelSection"]',
-  // unverified: comment threads on a post page; the classic class names first, the SDUI urn attribute second
+  // The filled Experience block is a div whose componentkey ends in ExperienceTopLevelSection (checked 2026-11-01); an empty placeholder with the same words mid-key sits beside it, hence $= rather than *=.
+  EXPERIENCE: '[componentkey$="ExperienceTopLevelSection"]',
+  // Present from page load and sits where Experience will render; scrolling it into view is what makes LinkedIn load the block. The profile scrolls inside an inner panel, so a mouse wheel only works when the cursor happens to be over it.
+  EXPERIENCE_ANCHOR: '[componentkey^="profileCardsExperienceOnly"]',
+  // verified 2026-11-01 by the CommentComponentReference key: comment threads on a post page; the classic class names and older SDUI forms are kept in case an account still gets that markup
   COMMENT: 'article.comments-comment-entity, article.comments-comment-item, [data-id^="urn:li:comment"], [componentkey*="comment" i][role="article"], [componentkey^="CommentComponentReference_urn:li:comment"]',
   COMMENT_TEXT: '.comments-comment-item__main-content, .comments-comment-entity__content, [data-testid="expandable-text-box"], .update-components-text',
   LOAD_MORE_COMMENTS: /load more comments|show more comments|see more comments|load previous replies/i,
