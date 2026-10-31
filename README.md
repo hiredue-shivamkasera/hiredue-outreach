@@ -20,7 +20,7 @@ npm run dev           # Vite + Electron with hot reload
 npm test              # the rules and steps, no browser needed
 ```
 
-The browser is Camoufox, the same pinned build `hiredue-desktop-application` uses (152.0.4-beta.30), installed once in `~/Library/Caches/camoufox`. **This app never installs Camoufox**, because camoufox-js deletes that whole directory whenever it fetches, which would break the desktop app. If a run says Camoufox is missing, run `npm run camoufox:fetch` in `hiredue-desktop-application`.
+The browser is Camoufox, the same pinned build `hiredue-desktop-application` uses (158.0-beta.40), installed once in `~/Library/Caches/camoufox`. **This app never installs Camoufox**, because camoufox-js deletes that whole directory whenever it fetches, which would break the desktop app. If a run says Camoufox is missing, run `npm run camoufox:fetch` in `hiredue-desktop-application`.
 
 If Electron starts as plain Node (`app` is undefined), your shell has `ELECTRON_RUN_AS_NODE=1` set. VS Code's extension host sets it. Run `unset ELECTRON_RUN_AS_NODE` first.
 

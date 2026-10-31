@@ -114,7 +114,7 @@ const TRIGGERS = {
 };
 
 // The browser build hiredue-desktop-application pins in electron/browser/camoufox.pin.json; both apps share one install in the OS cache.
-const CAMOUFOX_PIN = { version: "152.0.4", release: "beta.30" };
+const CAMOUFOX_PIN = { version: "158.0", release: "beta.40" };
 
 // LiteLLM proxy in front of the Azure models; any OpenAI-compatible endpoint works.
 const LLM_DEFAULTS = { baseUrl: "https://ai.hiredue.com/v1", model: "deepseek-v4-flash" };

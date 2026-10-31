@@ -4,9 +4,9 @@ This page takes you from a fresh checkout to a finished run whose results you ca
 
 ## Before you install
 
-The app drives LinkedIn through Camoufox, a patched Firefox that looks like a normal person's browser. It does not download Camoufox itself. It uses the copy that `hiredue-desktop-application` already installed in `~/Library/Caches/camoufox`, pinned to version 152.0.4-beta.30.
+The app drives LinkedIn through Camoufox, a patched Firefox that looks like a normal person's browser. It does not download Camoufox itself. It uses the copy that `hiredue-desktop-application` already installed in `~/Library/Caches/camoufox`, pinned to version 158.0-beta.40.
 
-That sharing has one sharp edge. camoufox-js, the library both apps use, deletes the whole `~/Library/Caches/camoufox` folder every time it fetches a browser. If this app ever fetched its own copy, it would wipe the desktop app's browser too. So it never does. When a run fails with "Camoufox 152.0.4-beta.30 is not installed", go to `hiredue-desktop-application` and run:
+That sharing has one sharp edge. camoufox-js, the library both apps use, deletes the whole `~/Library/Caches/camoufox` folder every time it fetches a browser. If this app ever fetched its own copy, it would wipe the desktop app's browser too. So it never does. When a run fails with "Camoufox 158.0-beta.40 is not installed", go to `hiredue-desktop-application` and run:
 
 ```bash
 npm run camoufox:fetch
