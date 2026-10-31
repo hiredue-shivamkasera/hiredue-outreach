@@ -504,7 +504,8 @@ function readComments(S) {
     const link = c.querySelector('a[href*="/in/"]');
     const nameEl = c.querySelector(".comments-comment-meta__description-title, .comments-post-meta__name-text, [aria-hidden='true']");
     const label = link?.getAttribute("aria-label")?.match(/View (.+?)['’]s/)?.[1];
-    const name = (label || nameEl?.innerText || link?.innerText || "").split("\n")[0].trim();
+    // The 2026 comment markup puts the connection degree on the name line ("rohit jha • 3rd+"), so cut everything from the bullet on.
+    const name = (label || nameEl?.innerText || link?.innerText || "").split("\n")[0].replace(/\s*•.*$/, "").trim();
     const headline = c.querySelector(".comments-comment-meta__description-subtitle, .comments-post-meta__headline")?.innerText?.trim() || null;
     const text = c.querySelector(S.COMMENT_TEXT)?.innerText?.trim() || "";
     return { name, headline, profileUrl: link?.href || null, text };

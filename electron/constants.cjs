@@ -32,7 +32,7 @@ const SELECTORS = {
   TOPCARD: '[componentkey*="Topcard"]',
   EXPERIENCE: 'section[componentkey*="ExperienceTopLevelSection"]',
   // unverified: comment threads on a post page; the classic class names first, the SDUI urn attribute second
-  COMMENT: 'article.comments-comment-entity, article.comments-comment-item, [data-id^="urn:li:comment"], [componentkey*="comment" i][role="article"]',
+  COMMENT: 'article.comments-comment-entity, article.comments-comment-item, [data-id^="urn:li:comment"], [componentkey*="comment" i][role="article"], [componentkey^="CommentComponentReference_urn:li:comment"]',
   COMMENT_TEXT: '.comments-comment-item__main-content, .comments-comment-entity__content, [data-testid="expandable-text-box"], .update-components-text',
   LOAD_MORE_COMMENTS: /load more comments|show more comments|see more comments|load previous replies/i,
   // verified: messaging composer
